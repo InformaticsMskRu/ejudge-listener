@@ -1,3 +1,5 @@
+from flask import current_app
+
 from collections import OrderedDict
 
 from ejudge_listener.protocol.exceptions import ProtocolNotFoundError
@@ -20,5 +22,6 @@ def read_tests_results(run: EjudgeRun):
                 str_num = str(num)
                 tests[str_num] = run.get_test_full_protocol(str_num)
         return {'tests': tests, 'compiler_output': run.compiler_output}
-    except Exception:
+    except Exception as e:
+        current_app.logger.info("{}".format(e))
         raise ProtocolNotFoundError

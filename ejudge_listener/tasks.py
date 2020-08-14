@@ -1,3 +1,4 @@
+from flask import current_app
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from requests import RequestException
@@ -27,13 +28,14 @@ def send_non_terminal(request_args):
 def load_protocol(self, request_args):
     """ Load Ejudge run from database and load protocol from filesystem for this run.
     """
+    logger.info("laod_protocol t")
     try:
         return flow.load_protocol(request_args)
     except NoResultFound:
         logger.error(f'Run not found. Request args={request_args}')
         self.request.chain = None  # Stop chain
     except ProtocolNotFoundError as exc:
-        logger.warning(f'Protocol not found. Retrying task. Request args={request_args}')
+        current_app.logger.warning(f'Protocol not found. Retrying task. Request args={request_args}')
         raise self.retry(exc=exc)
 
 

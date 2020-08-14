@@ -61,7 +61,8 @@ class BaseConfig:
     REDIS_URL = os.getenv('REDIS_URL', 'redis://@localhost:6379/0')
 
     # services
-    EJUDGE_NEW_CLIENT_URL = os.getenv('EJUDGE_NEW_CLIENT_URL', 'http://localhost/cgi-bin/new-client')
+    EJUDGE_MASTER_TOKEN = os.getenv('EJUDGE_MASTER_TOKEN', 'EMPTY_TOKEN')
+    EJUDGE_NEW_CLIENT_URL = os.getenv('EJUDGE_NEW_CLIENT_URL', 'http://localhost/cgi-bin/new-master')
     EJUDGE_USER = os.getenv('EJUDGE_USER', 'user')
     EJUDGE_PASSWORD = os.getenv('EJUDGE_PASSWORD', 'pass')
 

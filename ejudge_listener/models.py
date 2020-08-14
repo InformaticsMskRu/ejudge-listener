@@ -2,6 +2,7 @@ import os
 import xml
 import xml.dom.minidom
 import zipfile
+import requests
 
 from flask import current_app
 
@@ -277,30 +278,20 @@ class EjudgeRun(db.Model):
 
     @lazy
     def get_audit(self):
+        params = {
+            'contest_id': self.contest_id,
+            'action': 'raw-audit-log',
+            'run_id': self.run_id,
+        }
+        headers = {
+            'Authorization': 'Bearer ' + current_app.config.get('EJUDGE_MASTER_TOKEN')
+        }
+        r = requests.get(current_app.config['EJUDGE_NEW_CLIENT_URL'], params=params, headers=headers)
         try:
-            data = safe_open(submit_path(current_app.config['AUDIT_PATH'],
-                                         self.contest_id, self.run_id), 'r').read()
-        except FileNotFoundError:
-            raise AuditNotFoundError  # TODO: исправить этот костыль, он относится к run.py:188
-        if type(data) == bytes:
-            data = data.decode('ascii')
-        return data
-
-    @lazy
-    def get_sources(self):
-        data = safe_open(submit_path(current_app.config['SOURCES_PATH'],
-                                     self.contest_id, self.run_id), 'rb').read()
-        for encoding in ['utf-8', 'ascii', 'windows-1251']:
-            try:
-                data = data.decode(encoding)
-            except:
-                print('decoded:', encoding)
-                pass
-            else:
-                break
-        else:
-            return 'Ошибка кодировки'
-        return data
+            r.raise_for_status()
+        except:
+            raise AuditNotFoundError
+        return r.text
 
     def get_output_file(
             self, test_num, tp="o", size=None
@@ -490,12 +481,21 @@ class EjudgeRun(db.Model):
 
     @lazy
     def _get_protocol(self):
-        filename = submit_path(current_app.config['PROTOCOLS_PATH'],
-                               self.contest_id, self.run_id)
-        if filename:
-            return get_protocol_from_file(filename)
-        else:
-            return '<a></a>'
+        params = {
+            'contest_id': self.contest_id,
+            'action': 'raw-report',
+            'run_id': self.run_id,
+        }
+        current_app.logger.error(current_app.config)
+        headers = {
+            'Authorization': 'Bearer ' + current_app.config.get('EJUDGE_MASTER_TOKEN')
+        }
+        r = requests.get(current_app.config['EJUDGE_NEW_CLIENT_URL'], params=params, headers=headers)
+        try:
+            r.raise_for_status()
+        except:
+            return ""
+        return r.text
 
     protocol = property(_get_protocol)
 
