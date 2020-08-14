@@ -575,7 +575,6 @@ class EjudgeRun(db.Model):
             'action': 'raw-report',
             'run_id': self.run_id,
         }
-        current_app.logger.error(current_app.config)
         headers = {
             'Authorization': 'Bearer ' + current_app.config.get('EJUDGE_MASTER_TOKEN')
         }

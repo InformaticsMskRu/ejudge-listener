@@ -54,10 +54,7 @@ def send_non_terminal(request_args: dict) -> None:
         timeout=REQUEST_TIMEOUT,
     )
 
-    current_app.logger.warning('Reauert {} / {} / {}'.format(request_args, r.text, r.status_code))
-
 def load_protocol(request_args: dict) -> Tuple[dict, dict]:
-    current_app.logger.warning('Reauert load_protocol {}'.format(request_args))
     r, _ = ej_request_schema.load(request_args)
     run = (
         db.session.query(EjudgeRun)
@@ -81,8 +78,6 @@ def send_terminal(run_data: dict):
     r = requests.post(
         current_app.config['EJUDGE_FRONT_URL'], json=run_data, timeout=REQUEST_TIMEOUT
     )
-    print(r.json())
-    current_app.logger.warning('Send terminal {} / {}'.format(r.text, r.status_code)    )
     r.raise_for_status()
 
 
