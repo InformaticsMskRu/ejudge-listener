@@ -85,6 +85,9 @@ class BaseConfig:
     # Celery requires lowercased config
     broker_url = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
     task_ignore_result = bool_(os.getenv('CELERY_TASK_IGNORE_RESULT', True))
+    imports = (
+        'ejudge_listener.tasks'
+    )
     worker_max_memory_per_child = 250_000  # 250MB
     broker_transport_options = {
         'fanout_prefix': True,
@@ -93,7 +96,9 @@ class BaseConfig:
     }
     worker_hijack_root_logger = False
 
-
+    # Debug settings
+    DEBUG_PROTOCOL_DUMP_DIR = os.getenv('DEBUG_PROTOCOL_DUMP_DIR', '/tmp/protocols_dump')
+    RESERVE_LISTENER_SERVICE_URL = os.getenv('RESERVE_LISTENER_SERVICE_URL', 'http://127.0.0.1:5001/notification/update_run')
 
 class DevConfig(BaseConfig):
     ...

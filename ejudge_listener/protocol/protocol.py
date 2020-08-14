@@ -2,8 +2,8 @@ from flask import current_app
 
 from collections import OrderedDict
 
-from ejudge_listener.protocol.exceptions import ProtocolNotFoundError
 from ejudge_listener.models import EjudgeRun
+from ejudge_listener.protocol.exceptions import ProtocolNotFoundError, TestsNotFoundError
 
 
 def read_protocol(run: EjudgeRun) -> dict:
