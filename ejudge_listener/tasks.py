@@ -9,8 +9,9 @@ from ejudge_listener import flow
 from ejudge_listener.flow import is_4xx_error, mongo_rollback
 from ejudge_listener.protocol.exceptions import ProtocolNotFoundError, TestsNotFoundError
 
-logger = get_task_logger(__name__)
+from pyinstrument import Profiler
 
+logger = get_task_logger(__name__)
 
 @shared_task(ignore_result=True, retry=False)
 def send_non_terminal(request_args):
@@ -25,13 +26,16 @@ def send_non_terminal(request_args):
     flow.send_non_terminal(request_args)
 
 
-@shared_task(bind=True, default_retry_delay=3, max_retries=5)
+@shared_task(bind=True, default_retry_delay=30, max_retries=5)
 def load_protocol(self, request_args):
     """ Load Ejudge run from database and load protocol from filesystem for this run.
     """
     logger.info("laod_protocol t")
     try:
-        return flow.load_protocol(request_args)
+        res = flow.load_protocol(request_args)
+
+        logger.info("laod_protocol t+")
+        return res
 
     except NoResultFound:
         logger.error(f'Run not found. Aborting task. Request args={request_args}')
@@ -50,6 +54,7 @@ def load_protocol(self, request_args):
 
     except ProtocolNotFoundError as exc:
         if self.request.retries < load_protocol.max_retries:
+            logger.info('retry protocol')
             raise self.retry(exc=exc)
         logger.warning('Protocol not found. Max retries count exceed. Aborting.'
                        f'Request args={request_args}')

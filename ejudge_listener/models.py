@@ -589,5 +589,5 @@ class EjudgeRun(db.Model):
 
     @lazy
     def fetch_tested_protocol_data(self):
-        self.xml = xml.dom.minidom.parseString(str(self.protocol))
+        self.xml = xml.dom.minidom.parseString(u'{0}'.format(self.protocol).encode('utf-8'))
         self.parsetests()

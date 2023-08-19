@@ -11,7 +11,7 @@ from ejudge_listener.models import EjudgeRun
 from ejudge_listener.extensions import mongo, db
 from ejudge_listener.protocol.protocol import read_protocol
 
-REQUEST_TIMEOUT = 5  # seconds
+REQUEST_TIMEOUT = 10  # seconds
 
 
 class EjudgeRequest(NamedTuple):
