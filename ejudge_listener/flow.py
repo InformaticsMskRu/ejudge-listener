@@ -57,8 +57,15 @@ def load_run_data(request_args: dict) -> dict:
 
 def send(run_data: dict):
     run_data['judge_id'] = current_app.config['RMATICS_JUDGE_ID']
+
+    token = current_app.config['EJUDGE_API_TOKEN']
+    if not token:
+        current_app.logger.error('EJUDGE_API_TOKEN is not configured')
+    headers = {'Authorization': f'Bearer {token}'}
+
     r = requests.post(
-        current_app.config['RMATICS_ALIVE_URL'], json=run_data, timeout=REQUEST_TIMEOUT
+        current_app.config['RMATICS_ALIVE_URL'], json=run_data,
+        headers=headers, timeout=REQUEST_TIMEOUT
     )
 
     r.raise_for_status()
