@@ -56,7 +56,10 @@ def load_run_data(request_args: dict) -> dict:
 
 
 def send(run_data: dict):
-    run_data['judge_id'] = current_app.config['RMATICS_JUDGE_ID']
+    judge_id = current_app.config['RMATICS_JUDGE_ID']
+    if judge_id is None:
+        current_app.logger.error('RMATICS_JUDGE_ID is not configured')
+    run_data['judge_id'] = judge_id
 
     token = current_app.config['EJUDGE_API_TOKEN']
     if not token:

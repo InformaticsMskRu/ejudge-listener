@@ -64,6 +64,7 @@ class BaseConfig:
     
     # Services
     RMATICS_ALIVE_URL = os.getenv('RMATICS_ALIVE_URL')
+    # Обязателен: rmatics по нему проверяет EJUDGE_API_TOKEN
     RMATICS_JUDGE_ID = int_(os.getenv('RMATICS_JUDGE_ID'))
     EJUDGE_API_TOKEN = os.getenv('EJUDGE_API_TOKEN')
 
