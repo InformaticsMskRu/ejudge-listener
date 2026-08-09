@@ -58,7 +58,19 @@ def load_run_data(request_args: dict) -> dict:
 def send(run_data: dict):
     run_data['judge_id'] = current_app.config['RMATICS_JUDGE_ID']
     r = requests.post(
-        current_app.config['RMATICS_ALIVE_URL'], json=run_data, timeout=REQUEST_TIMEOUT
+        current_app.config['RMATICS_ALIVE_URL'],
+        json=run_data,
+        headers=_auth_headers(),
+        timeout=REQUEST_TIMEOUT,
     )
 
     r.raise_for_status()
+
+
+def _auth_headers() -> dict:
+    """Токен ejudge api этого judge, которым закрыта ручка update_from_ejudge_v2.
+
+    На стороне rmatics токен сверяется с judges.json по judge_id из тела
+    нотификации, поэтому шлём тот же токен, с которым judge ходит в свой ejudge.
+    """
+    return {'Authorization': 'Bearer ' + current_app.config['EJUDGE_API_TOKEN']}

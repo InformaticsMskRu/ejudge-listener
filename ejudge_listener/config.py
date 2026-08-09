@@ -65,6 +65,10 @@ class BaseConfig:
     # Services
     RMATICS_ALIVE_URL = os.getenv('RMATICS_ALIVE_URL')
     RMATICS_JUDGE_ID = int_(os.getenv('RMATICS_JUDGE_ID'))
+    # Токен ejudge api этого judge (тот же, что в judges.json на стороне rmatics).
+    # update_from_ejudge_v2 сверяет его по judge_id, поэтому нотификации без него
+    # получат 401/403.
+    EJUDGE_API_TOKEN = os.getenv('EJUDGE_API_TOKEN')
 
     # Celery requires lowercased config
     broker_url = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
