@@ -15,6 +15,7 @@ ej_request_schema = EjudgeRequestSchema()
 
 RMATICS_URL = 'http://rmatics/problem/run/action/update_from_ejudge'
 JUDGE_ID = 2
+API_TOKEN = 'ejudge-api-token'
 
 
 class TestLoadRunData(TestCase):
@@ -40,6 +41,7 @@ class TestSend(TestCase):
         super().setUp()
         self.app.config['RMATICS_ALIVE_URL'] = RMATICS_URL
         self.app.config['RMATICS_JUDGE_ID'] = JUDGE_ID
+        self.app.config['EJUDGE_API_TOKEN'] = API_TOKEN
 
     @patch('ejudge_listener.flow.requests.post')
     def test_sends_run_data_with_judge_id(self, mock_post):
@@ -53,6 +55,17 @@ class TestSend(TestCase):
         # judge_id дописывается к данным нотификации
         self.assertEqual(kwargs['json']['judge_id'], JUDGE_ID)
         self.assertEqual(kwargs['json']['run_id'], self.run_data['run_id'])
+
+    @patch('ejudge_listener.flow.requests.post')
+    def test_sends_bearer_token(self, mock_post):
+        """Ручка update_from_ejudge_v2 закрыта токеном ejudge api этого judge."""
+        mock_post.return_value = Mock(status_code=200)
+
+        send(dict(self.run_data))
+
+        _, kwargs = mock_post.call_args
+        self.assertEqual(kwargs['headers']['Authorization'],
+                         f'Bearer {API_TOKEN}')
 
     @patch('ejudge_listener.flow.requests.post')
     def test_error_response_raises(self, mock_post):
